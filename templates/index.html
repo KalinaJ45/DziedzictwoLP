@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+{% load leaflet_tags %}
+
+<head>
+    {% leaflet_js %}
+    {% leaflet_css %}
+    <title>Our Home</title>
+    <style type="text/css">
+        #gis {
+            width: 80%;
+            height: 700px;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css"
+        href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css' %}">
+    <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js' %}">	</script>
+    <script type="text/javascript"
+        src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js' %}"></script>
+
+</head>
+
+<body>
+    <h3>
+        Dziedzictwo kulturowe LP
+    </h3>
+    <br>
+    <script type="text/javascript">
+        function our_layers(map, options) {
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            });
+            var OpenTopoMap = L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                maxZoom: 17,
+                attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            });
+
+
+            var datasets = new L.GeoJSON.AJAX("{% url 'zabytkiruchome' %}", {
+                
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.nazwa.toString())
+                }
+
+            });
+            var datasets1 = new L.GeoJSON.AJAX("{% url 'parki' %}", {
+                style: function colors(feature) {
+                    switch (feature.properties.nazwa) {
+                        case 'Mickiewiczowski Park Kulturowy':
+                            return {
+                                color: 'orange',
+                                fillOpacity: 0.8
+
+                            };
+                            break;
+
+                    }
+
+                },
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.nazwa.toString())
+                }
+
+            });
+
+            var datasets2 = new L.GeoJSON.AJAX("{% url 'pomniki' %}", {
+                
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.nazwa.toString())
+                }
+
+            });
+
+            var datasets3 = new L.GeoJSON.AJAX("{% url 'unesco' %}", {
+                
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.nazwa.toString())
+                }
+
+            });
+
+           
+            datasets.addTo(map);
+            datasets1.addTo(map);
+            datasets2.addTo(map);
+            datasets3.addTo(map);
+            var baseLayers = {
+                "OSM": osm,
+                "OpenTopoMap": OpenTopoMap
+            }
+            var groupedOverlays = {
+                "Inne formy ochrony": {
+                    "Parki kulturowe": datasets1,
+                    "Pomniki historii":datasets2,
+                    "Zabytki UNESCO": datasets3,
+
+                
+                },
+          
+               
+                    "Zabytki wpisane do rejestru":{
+                    "Zabytki ruchome": datasets,
+
+                }
+            
+
+            };
+
+            L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+        }
+    </script>
+    {% leaflet_map "gis" callback="window.our_layers" %}
+</body>
+
+</html>
