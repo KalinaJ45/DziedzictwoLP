@@ -18,7 +18,7 @@
     <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js' %}">	</script>
     <script type="text/javascript"
         src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js' %}"></script>
-
+    <script type="text/javascript" src="{% static 'leaflet.wms.js' %}"></script>
 </head>
 
 <body>
@@ -28,86 +28,208 @@
     <br>
     <script type="text/javascript">
         function our_layers(map, options) {
-            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            });
-            var OpenTopoMap = L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                maxZoom: 17,
-                attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-            });
+            var layer_OpenStreetMap= L.tileLayer.wms('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            opacity: 1.0,
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        
+        
+        
+            var layer_Nadlesnictwa= L.WMS.layer("https://mapserver.bdl.lasy.gov.pl/ArcGIS/services/WMS_BDL_kat_wlasnosci/MapServer/WMSServer", "5", {
+                    format: 'image/png8',
+                    uppercase: true,
+                    transparent: true,
+                    continuousWorld : true,
+                    tiled: true,
+                    info_format: 'text/html',
+                    opacity: 1,
+                    identify: false,
+                    attribution: '',
+                });
+        
+            var layer_RDLP = L.WMS.layer("https://mapserver.bdl.lasy.gov.pl/ArcGIS/services/WMS_BDL_kat_wlasnosci/MapServer/WMSServer", "6", {
+                    format: 'image/png8',
+                    uppercase: true,
+                    transparent: true,
+                    continuousWorld : true,
+                    tiled: true,
+                    info_format: 'text/html',
+                    opacity: 1,
+                    identify: false,
+                    attribution: '',
+        }); 
 
 
-            var datasets = new L.GeoJSON.AJAX("{% url 'zabytkiruchome' %}", {
+
+            var MyIcon = L.Icon.extend({
+            options: {
                 
-                onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties.nazwa.toString())
-                }
+                iconSize:     [30, 40],
+                shadowSize:   [40, 25],
+                iconAnchor:   [15, 40],
+                shadowAnchor: [0, 25],
+                popupAnchor:  [0, -35]
+            }
+        });
 
-            });
-            var datasets1 = new L.GeoJSON.AJAX("{% url 'parki' %}", {
-                style: function colors(feature) {
-                    switch (feature.properties.nazwa) {
-                        case 'Mickiewiczowski Park Kulturowy':
-                            return {
-                                color: 'orange',
-                                fillOpacity: 0.8
 
-                            };
-                            break;
+            var ruchome_icon = new MyIcon({
+            iconUrl: "{% static 'icons/r.png' %}"});
+            map.createPane('pane_ruchome');
+            map.getPane('pane_ruchome').style.zIndex = 403;
+            map.getPane('pane_ruchome').style['mix-blend-mode'] = 'normal';
 
-                    }
 
+
+                var zab_ruch = new L.GeoJSON.AJAX("{% url 'zabytkiruchome' %}", {
+                    attribution: '',
+                    interactive: true,
+                    layerName: 'ruchome',
+                    pane: 'pane_ruchome',
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup(feature.properties.nazwa.toString())
+                    },
+                    pointToLayer: function (feature, latlng) {
+                    var context = {
+                        feature: feature,
+                        variables: {}
+                    };
+                    return L.marker(latlng, {icon: ruchome_icon});
                 },
-                onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties.nazwa.toString())
-                }
 
-            });
+                });
+            
 
+            var parki_icon = new MyIcon({
+            iconUrl: "{% static 'icons/pk.png' %}"});
+            map.createPane('pane_parki');
+            map.getPane('pane_parki').style.zIndex = 403;
+            map.getPane('pane_parki').style['mix-blend-mode'] = 'normal';
+
+            var parki_kult = L.layerGroup();
+                var datasets1 = new L.GeoJSON.AJAX("{% url 'parki' %}", {
+                    attribution: '',
+                    interactive: true,
+                    layerName: 'parki',
+                    pane: 'pane_parki',
+                    style: function colors(feature) {
+                        switch (feature.properties.nazwa) {
+                            case 'Mickiewiczowski Park Kulturowy':
+                                return {
+                                    color: 'orange',
+                                    fillOpacity: 0.8
+
+                                };
+                                break;
+
+                        }
+
+                    },
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup(feature.properties.nazwa.toString());
+                        
+                            var center = layer.getBounds().getCenter();
+                            var marker = L.marker(center, {icon: parki_icon});
+                            var polygonAndItsCenter = L.layerGroup([layer, marker]);
+                            polygonAndItsCenter.addTo(parki_kult);
+                            
+                        },
+                    });
+
+
+                    
+
+
+
+
+
+            
+
+
+
+            var pomniki_icon = new MyIcon({
+            iconUrl: "{% static 'icons/ph.png' %}"});
+            map.createPane('pane_pomniki');
+            map.getPane('pane_pomniki').style.zIndex = 403;
+            map.getPane('pane_pomniki').style['mix-blend-mode'] = 'normal';
+
+
+            var pomniki_hist = L.layerGroup();
             var datasets2 = new L.GeoJSON.AJAX("{% url 'pomniki' %}", {
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties.nazwa.toString())
-                }
+                    layer.bindPopup(feature.properties.nazwa.toString());
+                    var center = layer.getBounds().getCenter();
+                            var marker = L.marker(center, {icon: pomniki_icon});
+                            var polygonAndItsCenter = L.layerGroup([layer, marker]);
+                            polygonAndItsCenter.addTo(pomniki_hist);
+                            
+                        },
+                    });
 
-            });
+
+            var unesco_icon = new MyIcon({
+            iconUrl: "{% static 'icons/u.png' %}"});
+            map.createPane('pane_unesco');
+            map.getPane('pane_unesco').style.zIndex = 403;
+            map.getPane('pane_unesco').style['mix-blend-mode'] = 'normal';
+
+
+            var unesco = L.layerGroup();
 
             var datasets3 = new L.GeoJSON.AJAX("{% url 'unesco' %}", {
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties.nazwa.toString())
-                }
+                    layer.bindPopup(feature.properties.nazwa.toString());
+                    var center = layer.getBounds().getCenter();
+                            var marker = L.marker(center, {icon: unesco_icon});
+                            var polygonAndItsCenter = L.layerGroup([layer, marker]);
+                            polygonAndItsCenter.addTo(unesco);
+                            
+                        },
+                    });
 
-            });
+            layer_Nadlesnictwa.addTo(map);
+            layer_RDLP.addTo(map);
+            zab_ruch.addTo(map);
+            parki_kult.addTo(map);
+            pomniki_hist.addTo(map);
+            unesco.addTo(map);
 
-           
-            datasets.addTo(map);
-            datasets1.addTo(map);
-            datasets2.addTo(map);
-            datasets3.addTo(map);
+          
+
+        
             var baseLayers = {
-                "OSM": osm,
-                "OpenTopoMap": OpenTopoMap
+            
+               
             }
+            
             var groupedOverlays = {
+               
                 "Inne formy ochrony": {
-                    "Parki kulturowe": datasets1,
-                    "Pomniki historii":datasets2,
-                    "Zabytki UNESCO": datasets3,
+                    "Parki kultury": parki_kult,
+                
+                    "Pomniki historii": pomniki_hist,
+                    "Zabytki UNESCO": unesco,
 
                 
                 },
           
                
                     "Zabytki wpisane do rejestru":{
-                    "Zabytki ruchome": datasets,
+                    "Zabytki ruchome": zab_ruch,
 
-                }
-            
+                },
+                " ":{
+                    "Nadleśnictwa": layer_Nadlesnictwa,
+                    "RDLP":layer_RDLP,
+                },
 
             };
-
+           
             L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
         }
     </script>
