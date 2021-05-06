@@ -1,5 +1,21 @@
+
+
+
 from django.db import models
 from django.contrib.gis.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    # add additional fields in here
+    Jednostka = models.CharField("Jednostka", max_length=100)
+    RDLP_Zak = models.CharField("RDLP/Zakład krajowy", max_length=100)
+
+    def __str__(self):
+        return self.email
+
+
+ 
 
 
 # Create your models here.
@@ -10,8 +26,8 @@ class ParkiKulturowe(models.Model):
     informacje = models.CharField(max_length=255)
     kod_województwa = models.CharField(max_length=2)
     kod_powiatu = models.CharField(max_length=4)
-    nadleśnictwo = models.CharField(max_length=80)
-    RDLP = models.CharField(max_length=80)
+    jednostka = models.CharField(max_length=80)
+    RDLP_lub_zakład = models.CharField(max_length=80)
     uwagi = models.CharField(max_length=200)
     geometria = models.MultiPolygonField(srid=4326)
 
@@ -29,14 +45,16 @@ class UNESCO(models.Model):
     data_utworzenia = models.CharField(max_length=4)
     kod_województwa = models.CharField(max_length=2)
     kod_powiatu = models.CharField(max_length=16)
-    nadleśnictwo = models.CharField(max_length=80)
-    RDLP = models.CharField(max_length=80)
+    jednostka = models.CharField(max_length=80)
+    RDLP_lub_zakład = models.CharField(max_length=80)
     geometria = models.MultiPolygonField(srid=4326)
     
     def __str__(self):
         return self.nazwa
     class Meta:
 	    verbose_name_plural =" Zabytki UNESCO"
+
+
 
 class PomnikiHistorii(models.Model):
     inspire_id = models.CharField(max_length=50)
@@ -47,8 +65,8 @@ class PomnikiHistorii(models.Model):
     data_utworzenia = models.CharField(max_length=10)
     kod_województwa = models.CharField(max_length=2)
     kod_powiatu = models.CharField(max_length=16)
-    nadleśnictwo = models.CharField(max_length=80)
-    RDLP = models.CharField(max_length=80)
+    jednostka = models.CharField(max_length=80)
+    RDLP_lub_zakład = models.CharField(max_length=80)
     uwagi = models.CharField(max_length=200)
     geometria = models.MultiPolygonField(srid=4326)
 
@@ -69,3 +87,4 @@ class ZabytkiRuchome(models.Model):
         return self.nazwa
     class Meta:
 	    verbose_name_plural =" Zabytki ruchome"
+

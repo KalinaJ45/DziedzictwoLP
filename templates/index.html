@@ -6,26 +6,88 @@
 <head>
     {% leaflet_js %}
     {% leaflet_css %}
-    <title>Our Home</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dziedzictwo kulturowe</title>
     <style type="text/css">
-        #gis {
-            width: 80%;
-            height: 700px;
+        #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
         }
     </style>
+
+
+
     <link rel="stylesheet" type="text/css"
-        href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css' %}">
+        href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css' %}"/>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'style/bootstrap.css' %}">
+     
+    <link rel="stylesheet" type="text/css" href="{% static 'style/site.css' %}">
+
     <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js' %}">	</script>
     <script type="text/javascript"
         src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js' %}"></script>
     <script type="text/javascript" src="{% static 'leaflet.wms.js' %}"></script>
+
+
+
+    
 </head>
 
+
+    
+
+
+
+
 <body>
-    <h3>
-        Dziedzictwo kulturowe LP
-    </h3>
-    <br>
+
+    <header >
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+            <div class="container " >
+    
+                <a href="https://www.lasy.gov.pl/pl" target="_blank">
+                    <img style="max-height: 50px; margin-right: 10px" src="{% static 'images/logoLP.png' %}" />
+                </a>
+    
+                <a class="navbar-brand  text-white">DZIEDZICTWO KULTUROWE W ZARZĄDZIE LASÓW PAŃSTWOWYCH</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/admin/login">ZALOGUJ</a>
+        </li>
+    </ul>
+                    
+                </div>
+    
+                
+            </div>
+        </nav>
+    </header>
+
+
+
+
+
+
+    
+    <div class="container">
+            
+
+
+
+
+
+        <div id="map">
+        </div>
     <script type="text/javascript">
         function our_layers(map, options) {
             var layer_OpenStreetMap= L.tileLayer.wms('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -132,7 +194,7 @@
                         layer.bindPopup(feature.properties.nazwa.toString());
                         
                             var center = layer.getBounds().getCenter();
-                            var marker = L.marker(center, {icon: parki_icon});
+                            var marker = L.marker(center, {icon: parki_icon}).bindPopup(feature.properties.nazwa.toString());
                             var polygonAndItsCenter = L.layerGroup([layer, marker]);
                             polygonAndItsCenter.addTo(parki_kult);
                             
@@ -163,7 +225,7 @@
                 onEachFeature: function (feature, layer) {
                     layer.bindPopup(feature.properties.nazwa.toString());
                     var center = layer.getBounds().getCenter();
-                            var marker = L.marker(center, {icon: pomniki_icon});
+                            var marker = L.marker(center, {icon: pomniki_icon}).bindPopup(feature.properties.nazwa.toString());
                             var polygonAndItsCenter = L.layerGroup([layer, marker]);
                             polygonAndItsCenter.addTo(pomniki_hist);
                             
@@ -185,7 +247,7 @@
                 onEachFeature: function (feature, layer) {
                     layer.bindPopup(feature.properties.nazwa.toString());
                     var center = layer.getBounds().getCenter();
-                            var marker = L.marker(center, {icon: unesco_icon});
+                            var marker = L.marker(center, {icon: unesco_icon}).bindPopup(feature.properties.nazwa.toString());
                             var polygonAndItsCenter = L.layerGroup([layer, marker]);
                             polygonAndItsCenter.addTo(unesco);
                             
@@ -209,31 +271,43 @@
             
             var groupedOverlays = {
                
-                "Inne formy ochrony": {
-                    "Parki kultury": parki_kult,
+                'Inne formy ochrony': {
+                    '<img src="{% static "legend/pk.png" %}" /> Parki kultury': parki_kult,
                 
-                    "Pomniki historii": pomniki_hist,
-                    "Zabytki UNESCO": unesco,
+                    '<img src="{% static "legend/ph.png" %}" /> Pomniki Historii': pomniki_hist,
+                    '<img src="{% static "legend/u.png" %}" /> Zabytki UNESCO':  unesco,
 
                 
                 },
           
                
                     "Zabytki wpisane do rejestru":{
-                    "Zabytki ruchome": zab_ruch,
+                        '<img src="{% static "legend/r.png" %}" /> Zabytki ruchome': zab_ruch,
 
                 },
                 " ":{
-                    "Nadleśnictwa": layer_Nadlesnictwa,
-                    "RDLP":layer_RDLP,
+                    '<img src="{% static "legend/nadlesnictwa.png" %}" /> Nadleśnictwa': layer_Nadlesnictwa,
+                    '<img src="{% static "legend/rdlp.png" %}" /> RDLP':layer_RDLP,
                 },
 
             };
            
-            L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+            L.control.groupedLayers(baseLayers, groupedOverlays,{collapsed:false}).addTo(map);
         }
     </script>
-    {% leaflet_map "gis" callback="window.our_layers" %}
+</div>
+<footer class="border-top footer text-white">
+    <div class="container">
+        &copy; 2020 DGLP 
+        
+    
+
+    </div>
+</footer>
+
+
+
+    {% leaflet_map "map" callback="window.our_layers" %}
 </body>
 
 </html>

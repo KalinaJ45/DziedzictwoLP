@@ -9,8 +9,8 @@ parkikulturowe_mapping = {
     'informacje': 'INFORMACJE',
     'kod_województwa': 'KOD_WOJEWO',
     'kod_powiatu': 'KOD_POWIAT',
-    'nadleśnictwo': 'NADL',
-    'RDLP': 'RDLP',
+    'jednostka': 'JEDN',
+    'RDLP_lub_zakład': 'RDLP/ZAK',
     'uwagi': 'UWAGI',
     'geometria': 'MULTIPOLYGON',
 }
@@ -26,8 +26,8 @@ unesco_mapping = {
     'data_utworzenia': 'DAT_UTW',
     'kod_województwa': 'KOD_WOJ',
     'kod_powiatu': 'KOD_POWIAT',
-    'nadleśnictwo': 'NADL',
-    'RDLP': 'RDLP',
+    'jednostka': 'JEDN',
+    'RDLP_lub_zakład': 'RDLP/ZAK',
     'geometria': 'MULTIPOLYGON',
 }
 
@@ -46,8 +46,8 @@ pomnikihistorii_mapping = {
     'data_utworzenia': 'DAT_UTW',
     'kod_województwa': 'KOD_WOJ',
     'kod_powiatu': 'KOD_POWIAT',
-    'nadleśnictwo': 'NADL',
-    'RDLP': 'RDLP',
+    'jednostka': 'JEDN',
+    'RDLP_lub_zakład': 'RDLP/ZAK',
     'uwagi': 'UWAGI',
     'geometria': 'MULTIPOLYGON',
 }
@@ -59,8 +59,8 @@ pomnikihistorii_shp = os.path.abspath(os.path.join(
 zabytkiruchome_mapping = {
     'nazwa': 'NAZWA_ZABY',
     'rodzaj_dokumentu': 'DOKUMENT',
-    'jednostka': 'JEDNOSTKA',
-    'RDLP_lub_zakład': 'RDLP_ZAKL',
+    'jednostka': 'JEDN',
+    'RDLP_lub_zakład': 'RDLP/ZAK',
     'geometria': 'MULTIPOINT',
 }
 

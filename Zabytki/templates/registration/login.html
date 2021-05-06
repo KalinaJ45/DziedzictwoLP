@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %} 
+    
+   <div class="container">
+      <div class="row">
+    <div class="col">
+     
+    </div>
+    
+    <div class="col"  style="margin-top:60px">
+    
+    <div class="card" style="padding: 30px 25px 30px 25px; background-color:#005023; color: #FFFFFF">
+    <h5 class="card-title">ZALOGUJ SIĘ</h5>
+  
+    <form method="post">
+        {% csrf_token %}
+       
+ 
+  <div class="form-group row">
+    <label  class="col-sm-4 col-form-label">Użytkownik</label>
+    <div class="col-sm-1">
+     {{form.username}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label  class="col-sm-4 col-form-label">Hasło</label>
+    <div class="col-sm-1">
+      {{form.password}}
+    </div>
+  </div>
+        
+     
+        <button type="submit">Zaloguj</button>
+   </form>
+   </div>
+   </div>
+    
+<div class="col">
+     
+    </div>
+ </div>
+
+    </div>
+{% endblock content %}

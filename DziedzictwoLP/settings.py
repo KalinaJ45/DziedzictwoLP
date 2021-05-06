@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,6 +33,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
+    'admin_interface',
+    
+    'colorfield',
+   
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,8 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'leaflet',
     'Zabytki',
+    'import_export',
 ]
-
+X_FRAME_OPTIONS='SAMEORIGIN' # only if django version >= 3.0
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -79,10 +87,10 @@ WSGI_APPLICATION = 'DziedzictwoLP.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'ZabytkiLP',
-        'USER': 'postgres',
-        'HOST': 'localhost',
-        'PASSWORD': 'Kalina',
+        'NAME': 'ruygec_ezgyiy',
+        'USER': 'ruygec_ezgyiy',
+        'HOST': 'db.qgiscloud.com',
+        'PASSWORD': '4173c57f',
         'PORT': '5432',
     }
 }
@@ -134,5 +142,10 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 6,
     'MAX_ZOOM': 20,
     'MIN_ZOOM': 3,
-    'ATTRIBUTION_PREFIX': 'MADE BY DGLP',
+    'RESET_VIEW': False,
+    
 }
+#AUTH_PROFILE_MODULE = 'Zabytki.UserProfile'
+AUTH_USER_MODEL = 'Zabytki.CustomUser'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = 'home'
